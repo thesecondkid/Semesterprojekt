@@ -634,3 +634,134 @@ body {
     line-height: 1.75;
     color: #3a3f5a;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (max 640px)
+   Alle Anpassungen für Smartphones im Hochformat.
+   Breakpoint 640px deckt alle gängigen Phones ab (bis ~iPhone Pro Max).
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+    /* ── Genereller Content-Abstand verkleinern ── */
+    .content {
+        padding: 1.75rem 1.25rem;
+    }
+
+    /* ── Screen 2: GIF aus absoluter Position lösen, unter den Text fliessen ── */
+    /* position: relative macht das GIF zu einem normalen Element im Textfluss,
+       es erscheint automatisch unterhalb der h2 ohne irgendwas zu überlagern. */
+    .shuffle-gif {
+        position: relative;
+        right: auto;
+        left: auto;
+        top: auto;
+        bottom: auto;
+        transform: none;
+        display: block;
+        margin: 0 auto;              /* h2 hat bereits margin-bottom: 2.5rem → kein extra Abstand nötig */
+        width: clamp(130px, 42vw, 180px);
+    }
+
+    /* ── Screen 3: Fächer – kleinere Karten, engerer Bogen ── */
+    /* Rechenlogik: 90px Karte, Halbbreite = 45px, Bogen-Ursprung 300px unter Karten-Top.
+       Effektiver Radius (Kartenmitte → Drehpunkt) = 300 + 74 (halbe Kartenhöhe) = 374px.
+       Bei ±14°: Versatz = 374 × sin(14°) ≈ 90px.
+       Äussere Kartenkante: Screen-Mitte ± 90 ± 45 = bleibt ~30px Rand. Passt. */
+    .card-row {
+        height: clamp(190px, 50vw, 270px);
+    }
+
+    .selectable-card {
+        width: 90px;
+        left: calc(50% - 45px);       /* 45px = halbe Kartenbreite */
+        transform-origin: 45px 300px; /* engerer Bogen als Desktop (war 500px) */
+    }
+
+    .selectable-card:nth-child(1) { --rotate: -14deg; }
+    .selectable-card:nth-child(2) { --rotate:  -7deg; }
+    .selectable-card:nth-child(3) { --rotate:   0deg; }
+    .selectable-card:nth-child(4) { --rotate:   7deg; }
+    .selectable-card:nth-child(5) { --rotate:  14deg; }
+
+    /* ── Screen 4: Karte + Auge untereinander ── */
+    .ready-columns {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .card-back--large {
+        width: 150px;
+    }
+
+    .eye-wrapper {
+        max-width: 180px;
+    }
+
+    /* ── Screen 5: Result – scrollen erlauben ── */
+    #screen-result {
+        align-items: flex-start;   /* Inhalt oben starten statt zentriert */
+        overflow-y: auto;          /* Scrollen innerhalb des fixed Screens */
+    }
+
+    .result-eyebrow {
+        font-size: clamp(1.3rem, 6vw, 1.8rem);
+        margin-bottom: 1rem;
+    }
+
+    /* Grid → eine Spalte (Karte oben, Info unten) */
+    .result-layout {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    /* Karte zentrieren und etwas grösser als das Minimum */
+    .result-card {
+        width: min(185px, 52vw);
+        margin: 0 auto;
+    }
+
+    /* Kartenname auf Mobile etwas kleiner */
+    .result-name {
+        font-size: clamp(1.4rem, 6vw, 2rem);
+    }
+
+    .result-desc {
+        font-size: 0.9rem;
+        max-width: 100%;
+    }
+
+    /* Inhalt unten nicht abschneiden beim Scrollen */
+    .content--result {
+        padding-bottom: 3rem;
+    }
+
+    /* Buttons nebeneinander lassen (flex-wrap greift bei Bedarf) */
+    .result-actions {
+        gap: 0.75rem;
+    }
+
+    .result-actions .btn {
+        flex: 1;          /* beide Buttons gleich breit */
+        text-align: center;
+        padding: 0.85rem 1rem;
+    }
+
+    /* ── Modal: Vollbreite auf kleinen Screens ── */
+    .modal {
+        padding: 0.75rem;
+        align-items: flex-end;   /* Sheet kommt von unten */
+    }
+
+    .modal-box {
+        max-width: 100%;
+        border-radius: var(--box-radius) var(--box-radius) 0 0;  /* oben abgerundet, unten nicht */
+        padding: 1.75rem 1.25rem;
+        max-height: 88vh;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+    }
+}
