@@ -375,16 +375,20 @@ body {
 }
 
 /* ─── Texte auf Screen 5 werden versteckt gestartet ───
-   .result-hidden setzt opacity: 0 + leichten Versatz nach unten.
+   .result-hidden versteckt Elemente vollständig.
+   visibility: hidden entfernt sie aus dem Browser-Compositing –
+   damit scheinen sie auch durch backdrop-filter nicht mehr durch.
    JS entfernt die Klasse gestaffelt → Texte tauchen nacheinander auf. */
 .result-hidden {
     opacity: 0 !important;
     transform: translateY(12px) !important;
+    visibility: hidden !important;  /* komplett aus dem Rendering entfernen */
     pointer-events: none;
 }
 
-/* Übergänge für alle Textelemente auf Screen 5 */
-/* .result-eyebrow neu dazu: erscheint auch gestaffelt nach dem Flip */
+/* Übergänge für alle Textelemente auf Screen 5.
+   visibility hat keine Transition → wechselt sofort auf "visible"
+   wenn result-hidden entfernt wird, dann faded opacity sanft ein. */
 #result-kw-top,
 #result-name,
 #result-desc,
