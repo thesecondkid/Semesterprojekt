@@ -191,6 +191,7 @@ const germanCards = {
 // ─────────────────────────────────────────────────────────────────────
 let allCards = []       // Alle 16 Karten – wird von der API befüllt
 let currentCard = null  // Die aktuell gezogene Karte
+let revealTimeouts = [] // IDs aller laufenden Reveal-Timer (zum Abbrechen bei "Nochmal ziehen")
 
 
 // ─────────────────────────────────────────────────────────────────────
@@ -354,6 +355,12 @@ function renderResult(card) {
     resultCard.style.transition = ''
     resultCard.style.cursor     = ''
     document.getElementById('solo-overlay').classList.remove('visible')
+
+    // Alle noch laufenden Reveal-Timer abbrechen.
+    // Ohne das würden alte Timer später result-hidden entfernen,
+    // obwohl wir gerade einen neuen Durchlauf starten.
+    revealTimeouts.forEach(function(id) { clearTimeout(id) })
+    revealTimeouts = []
 
     // Texte vorbefüllen (anfangs alle unsichtbar durch .result-hidden)
     resultKwTop.innerText    = card.keywords
@@ -521,7 +528,8 @@ function endSoloMode(resultCard, soloOverlay) {
     soloOverlay.classList.remove('visible')
 
     // 950ms warten (≈ Dauer der Fly-Transition 0.9s), dann Texte einblenden
-    setTimeout(revealResultTexts, 950)
+    // Timer-ID speichern, damit er bei "Nochmal ziehen" abgebrochen werden kann
+    revealTimeouts.push(setTimeout(revealResultTexts, 950))
 }
 
 
@@ -547,9 +555,11 @@ function revealResultTexts() {
 
     order.forEach(function(el, index) {
         if (!el) return
-        setTimeout(function() {
+        // Timer-ID speichern → kann bei "Nochmal ziehen" abgebrochen werden
+        const tid = setTimeout(function() {
             el.classList.remove('result-hidden')
         }, index * 160)  // gestaffelt: jedes Element 160ms nach dem vorherigen
+        revealTimeouts.push(tid)
     })
 }
 
