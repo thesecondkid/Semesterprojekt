@@ -3,23 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cocktail API</title>
+    <title>Tarot · Eine Karte. Ein Moment.</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400&display=swap" rel="stylesheet">
+
+    <!-- Unser Stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <h1>Vorlage für interaktive Medien II :) </h1>
 
-    </header>
-    <main>
-        <h2>Main Content</h2>
-        <p>This is the main content of the page.</p>
+    <!-- ═══════════════════════════════════════════════════════
+         SCREEN 1 — START
+         Erster Bildschirm: Titel und Button "Karten mischen".
+         Klick auf den Button startet die Misch-Animation.
+    ═══════════════════════════════════════════════════════ -->
+    <section id="screen-start" class="screen active">
+        <div class="content">
+            <h1 class="display-title">Eine Karte.<br>Eine Weisheit.</h1>
+            <button id="btn-shuffle" class="btn btn--primary">Karten mischen</button>
+        </div>
+    </section>
 
-    </main>
-    <footer>
-        <p>This is the footer of the page.</p>
 
-    </footer>
+    <!-- ═══════════════════════════════════════════════════════
+         SCREEN 2 — MISCHEN
+         Übergangsscreen mit Animation: Karten werden gemischt.
+         Erscheint 3 Sekunden, dann folgt automatisch Screen 3.
+         "Atme." soll den User beruhigen und fokussieren.
+    ═══════════════════════════════════════════════════════ -->
+    <section id="screen-shuffle" class="screen">
+        <!-- Dezentes Punkte-Muster als Hintergrundtextur (rein per CSS) -->
+        <div class="dots-bg"></div>
+        <div class="content">
+            <span class="breathe-label">Atme.</span>
+            <h2 class="display-title display-title--muted">Die Karten<br>mischen sich.</h2>
+            <!--
+                GIF-Animation: Karten werden gemischt.
+                Datei: img/card shuffle.gif (aus dem Projektordner).
+                aria-hidden="true" = Screenreader überspringt das Bild (rein dekorativ).
+            -->
+            <img
+                src="img/card shuffle.gif"
+                alt=""
+                aria-hidden="true"
+                class="shuffle-gif"
+            >
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         SCREEN 3 — KARTENAUSWAHL
+         User wählt eine von 5 verdeckten Karten.
+         Die 5 Karten werden per JavaScript zufällig befüllt.
+    ═══════════════════════════════════════════════════════ -->
+    <section id="screen-select" class="screen">
+        <div class="content">
+            <h2 class="display-title">Welche Karte<br>ruft dich.</h2>
+            <!--
+                Hier werden per JavaScript 5 klickbare Karten eingefügt.
+                Jede Karte löst bei Klick die Auswahl aus.
+            -->
+            <div id="card-row" class="card-row" role="group" aria-label="Kartenauswahl"></div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         SCREEN 4 — KARTE IST BEREIT
+         Kurzer Übergangsmoment nach der Auswahl.
+         Die gewählte Karte ist noch verdeckt – Spannung aufbauen.
+         Nach 2.5 Sekunden folgt automatisch Screen 5.
+    ═══════════════════════════════════════════════════════ -->
+    <section id="screen-ready" class="screen">
+        <div class="content">
+            <h2 class="display-title">Deine Karte<br>ist bereit.</h2>
+            <div class="ready-columns">
+                <!-- Grosse verdeckte Karte (lila Rückseite wie im Figma) -->
+                <div class="card-back card-back--large" aria-hidden="true"></div>
+                <!--
+                    Auge-Illustration als SVG direkt im HTML.
+                    SVG = Vektorgrafik, keine Bilddatei nötig, skaliert perfekt.
+                    Die Sterne sind Unicode-Zeichen als <text>-Elemente.
+                -->
+                <div class="eye-wrapper" aria-hidden="true">
+                    <svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg" class="eye-svg">
+                        <!-- Augapfel-Form: zwei geschwungene Pfade ergeben die Mandelform -->
+                        <path d="M110 105 Q155 60 185 105 Q155 150 110 105 Q65 150 35 105 Q65 60 110 105Z"
+                              fill="none" stroke="#1a1f3a" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Iris + Pupille -->
+                        <circle cx="110" cy="105" r="24" fill="#1a1f3a"/>
+                        <!-- Lichtreflexion (weisser Kreis oben-rechts) -->
+                        <circle cx="118" cy="97" r="9" fill="white"/>
+                        <!-- Dekorative Sterne rund um das Auge -->
+                        <text x="125" y="68"  font-size="18" fill="#7c6ea8">✦</text>
+                        <text x="155" y="85"  font-size="13" fill="#7c6ea8">✦</text>
+                        <text x="163" y="108" font-size="11" fill="#7c6ea8">◆</text>
+                        <text x="56"  y="108" font-size="11" fill="#7c6ea8">▲</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         SCREEN 5 — ERGEBNIS
+         Zeigt die gezogene Karte mit Bild, Name und Beschreibung.
+         Zwei Aktionen: "Nochmal ziehen" oder "Mehr lesen" (Modal).
+    ═══════════════════════════════════════════════════════ -->
+    <section id="screen-result" class="screen">
+        <!--
+            Solo-Overlay: wird per JavaScript eingeblendet, wenn die Karte
+            alleine zentriert steht (vor dem Flip). Macht den Hintergrund
+            unscharf (Blur) und legt einen lila Schimmer drüber.
+            aria-hidden = für Screenreader nicht sichtbar (rein dekorativ).
+        -->
+        <div id="solo-overlay" aria-hidden="true"></div>
+        <div class="content content--result">
+            <h1 class="result-eyebrow">Für dich heute.</h1>
+            <div class="result-layout">
+
+                <!-- LINKE SPALTE: Kartenbild in einer Karten-Hülle -->
+                <div class="result-card">
+                    <!--
+                        Bildbereich: JavaScript fügt hier ein <img> ein.
+                        Falls das Bild nicht gefunden wird, erscheint ein
+                        farbiger Placeholder mit dem Anfangsbuchstaben.
+                    -->
+                    <div id="result-img-area" class="result-img-area"></div>
+                    <!-- Unterer Teil der Karte: Name und Keywords -->
+                    <div class="result-card-footer">
+                        <p id="result-card-name" class="result-card-name"></p>
+                        <div class="result-card-diamond" aria-hidden="true">◆</div>
+                        <p id="result-card-kw" class="result-card-kw"></p>
+                    </div>
+                </div>
+
+                <!-- RECHTE SPALTE: Karten-Informationen und Aktionen -->
+                <div class="result-info">
+                    <!-- Kleine Keyword-Zeile oben: z.B. "Fülle · Wachstum" -->
+                    <p id="result-kw-top" class="result-kw-top"></p>
+                    <!-- Grosser Kartenname: z.B. "DIE KAISERIN" -->
+                    <h2 id="result-name" class="result-name"></h2>
+                    <!-- Kurze deutsche Beschreibung -->
+                    <p id="result-desc" class="result-desc"></p>
+                    <!-- Aktions-Buttons -->
+                    <div class="result-actions">
+                        <button id="btn-again" class="btn btn--primary">Nochmal ziehen</button>
+                        <button id="btn-more"  class="btn btn--secondary">Mehr lesen</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════════════════
+         MODAL — MEHR LESEN
+         Erscheint wenn "Mehr lesen" angeklickt wird.
+         Zeigt ausführliche Kartenbedeutung (aufrecht + umgekehrt).
+         Schliessen: Button, Klick auf den Hintergrund oder Escape-Taste.
+    ═══════════════════════════════════════════════════════ -->
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <!-- Halbtransparenter Hintergrund: Klick darauf schliesst das Modal -->
+        <div id="modal-backdrop" class="modal-backdrop"></div>
+        <!-- Weisses Inhalts-Fenster -->
+        <div class="modal-box">
+            <button id="modal-close" class="modal-close" aria-label="Modal schliessen">✕</button>
+            <p id="modal-kw"    class="modal-kw"></p>
+            <h2 id="modal-title" class="modal-title"></h2>
+            <hr class="modal-divider">
+            <h3 class="modal-label">Bedeutung</h3>
+            <p id="modal-up"   class="modal-text"></p>
+            <h3 class="modal-label">Frage an dich heute</h3>
+            <p id="modal-rev"  class="modal-text"></p>
+            <h3 class="modal-label">Kurzbeschreibung</h3>
+            <p id="modal-desc" class="modal-text"></p>
+        </div>
+    </div>
+
+
+    <!--
+        JavaScript-Datei: ganz am Ende des <body> eingebunden.
+        So ist das gesamte HTML bereits geladen, bevor JS ausgeführt wird.
+    -->
+    <!--
+        Magic-Overlay: Ein unsichtbares div, das beim Screenübergang per JS
+        eingeblendet wird. Es erzeugt den Blur-/Glow-Effekt über allem anderen.
+        aria-hidden="true" = für Screenreader nicht relevant.
+    -->
+    <div id="magic-overlay" aria-hidden="true"></div>
+
     <script src="js/script.js" type="module"></script>
+
 </body>
 </html>

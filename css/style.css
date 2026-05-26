@@ -1,11 +1,625 @@
-* {
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN-TOKENS (CSS Custom Properties)
+   Zentrale Variablen für Farben. Einmal hier ändern → wirkt überall.
+═══════════════════════════════════════════════════════════════ */
+:root {
+    --bg:           #F2EDE4;   /* Creme/Beige  – Hintergrundfarbe      */
+    --navy:         #1a1f3a;   /* Dunkelblau   – Texte und Buttons      */
+    --purple:       #b8a9d4;   /* Lavendel     – Kartenrückseiten       */
+    --purple-dark:  #7c6ea8;   /* Dunkles Lila – Keywords, Sterne       */
+    --muted:        #8a8fa8;   /* Grau-Lila    – "Atme." Text           */
+    --white:        #ffffff;
+
+    --font:         'Josefin Sans', sans-serif;
+    --card-radius:  18px;
+    --box-radius:   12px;
+    --transition:   0.05s ease;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESET & BASIS
+   Entfernt Browser-Standardabstände. box-sizing: border-box
+   bedeutet: Padding/Border werden in die Breite eingerechnet.
+═══════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Kein Scrollen – jeweils nur ein Screen sichtbar */
+}
 
 body {
-    background-color: pink;
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--navy);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN-SYSTEM
+   Jedes <section> ist ein Vollbild-Screen (position: fixed).
+   Nur der Screen mit .active ist sichtbar (opacity: 1).
+   Wechsel wird über JavaScript gesteuert.
+═══════════════════════════════════════════════════════════════ */
+.screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition);
+    z-index: 1;
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: all;
+    z-index: 2;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTENT-CONTAINER
+   Begrenzt die maximale Breite und gibt Innenabstand.
+   clamp(min, bevorzugt, max) = responsive Grösse.
+═══════════════════════════════════════════════════════════════ */
+.content {
+    width: 100%;
+    max-width: 960px;
+    padding: clamp(1.5rem, 4vw, 4rem);
+}
+
+.content--result {
+    max-width: 1040px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   TYPOGRAFIE
+═══════════════════════════════════════════════════════════════ */
+.display-title {
+    font-size: clamp(2.4rem, 5.5vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+    margin-bottom: 2.5rem;
+}
+
+.display-title--muted {
+    color: var(--muted);
+}
+
+.breathe-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--purple);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   BUTTONS
+   .btn = gemeinsame Basis. --primary = dunkel. --secondary = Outline.
+═══════════════════════════════════════════════════════════════ */
+.btn {
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    padding: 0.85rem 2.2rem;
+    border-radius: 6px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.btn:hover  { opacity: 0.8; }
+.btn:active { transform: scale(0.97); }
+
+.btn--primary {
+    background: var(--navy);
+    color: var(--white);
+    border-color: var(--navy);
+}
+
+.btn--secondary {
+    background: transparent;
+    color: var(--navy);
+    border-color: var(--navy);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   KARTEN-RÜCKSEITE
+   Lila Karte mit gestricheltem Innen-Rahmen (::after = Pseudo-Element).
+═══════════════════════════════════════════════════════════════ */
+.card-back {
+    background: var(--purple);
+    border-radius: var(--card-radius);
+    position: relative;
+    aspect-ratio: 2 / 3.3;
+}
+
+.card-back::after {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border: 1.5px dashed rgba(255, 255, 255, 0.55);
+    border-radius: calc(var(--card-radius) - 5px);
+}
+
+.card-back--large {
+    width: 210px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 2 — MISCHEN
+   Hintergrund-Punkte + GIF-Animation rechts im Bild.
+═══════════════════════════════════════════════════════════════ */
+.dots-bg {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #c8a0a0 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.shuffle-gif {
+    position: absolute;
+    right: clamp(4rem, 12vw, 16rem);
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(180px, 22vw, 300px);
+    height: auto;
+    pointer-events: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MAGIC OVERLAY
+   Unsichtbares div, das beim Screenübergang über alles gelegt wird.
+   .visible → Blur + lila Glow erscheint, dann wieder weg.
+   backdrop-filter: blur() = macht alles dahinter unscharf.
+═══════════════════════════════════════════════════════════════ */
+#magic-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    transition: opacity 0.6s ease, backdrop-filter 0.6s ease;
+}
+
+/* Klasse wird per JS gesetzt: Overlay fährt hoch */
+#magic-overlay.visible {
+    opacity: 1;
+    backdrop-filter: blur(16px);
+    pointer-events: all;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SOLO-OVERLAY (Screen 5 — Solo-Modus)
+   Liegt als erstes Kind in #screen-result.
+   Blendet den Hintergrund aus (Blur + lila Schimmer), während
+   die Karte alleine zentriert steht.
+   z-index: 5 → über dem Seiten-Layout (z-index: auto),
+               aber unter der Karte (z-index: 10).
+═══════════════════════════════════════════════════════════════ */
+#solo-overlay {
+    position: absolute;  /* füllt den gesamten #screen-result aus */
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.7s ease, backdrop-filter 0.7s ease;
+}
+
+/* .visible wird per JS gesetzt: Overlay fährt hoch */
+#solo-overlay.visible {
+    opacity: 1;
+    pointer-events: all; /* Klick auf Hintergrund blockieren während Solo-Modus */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 3 — KARTENAUSWAHL (FÄCHER-LAYOUT)
+   Alle 5 Karten starten an derselben Position (Mitte unten).
+   Jede wird dann per transform-origin + rotate() um einen weit
+   entfernten Drehpunkt unterhalb geschwenkt → echter Fächer-Bogen.
+═══════════════════════════════════════════════════════════════ */
+.card-row {
+    /* position: relative gibt dem Container eine eigene Koordinatenwelt,
+       damit die absolut positionierten Kinder richtig platziert werden. */
+    position: relative;
+    width: 100%;
+    height: clamp(260px, 35vw, 360px);
+    margin-top: 2rem;
+}
+
+.selectable-card {
+    /* Feste Breite – zusammen mit transform-origin ergibt das konsistente Abstände */
+    width: 130px;
+    aspect-ratio: 2 / 3.3;
+
+    /* Alle Karten übereinander in der Mitte unten stapeln */
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 65px); /* 65px = halbe Kartenbreite → zentriert */
+
+    /* Drehpunkt: 65px von links (Kartenmitte) und 500px von oben (weit unten).
+       Da die Karte ~215px hoch ist, liegt der Drehpunkt ~285px UNTER der Karte.
+       Alle 5 Karten teilen sich diesen imaginären Punkt → echter gemeinsamer Bogen. */
+    transform-origin: 65px 500px;
+
+    --rotate: 0deg;
+    transform: rotate(var(--rotate));
+
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    border-radius: var(--card-radius);
+    padding: 0;
+    transition: transform 0.28s ease, filter 0.28s ease;
+    z-index: 1;
+}
+
+/* Jede Karte bekommt eine andere Rotation – je weiter außen, desto stärker */
+.selectable-card:nth-child(1) { --rotate: -22deg; z-index: 1; }
+.selectable-card:nth-child(2) { --rotate: -11deg; z-index: 2; }
+.selectable-card:nth-child(3) { --rotate:   0deg; z-index: 3; }
+.selectable-card:nth-child(4) { --rotate:  11deg; z-index: 2; }
+.selectable-card:nth-child(5) { --rotate:  22deg; z-index: 1; }
+
+/* Hover: Karte dreht sich leicht aus dem Fächer heraus (scale) + lila Glow */
+.selectable-card:hover {
+    transform: rotate(var(--rotate)) scale(1.09);
+    filter: drop-shadow(0 0 18px rgba(180, 140, 240, 0.85));
+    z-index: 10;
+}
+
+.selectable-card:focus-visible {
+    outline: 3px solid var(--purple-dark);
+    outline-offset: 4px;
+}
+
+/* Die Karte auf Screen 3 zeigt nur das Deckblatt-Bild (kein 3D-Flip hier).
+   Das Bild sitzt direkt als <img> im Button. */
+.selectable-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--card-radius);
+    display: block;
+    pointer-events: none; /* Klick soll auf den Button gehen, nicht das Bild */
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 5 — RESULT CARD FLIP
+   Das Kartenbild startet verdeckt (Deckblatt). Klick → 3D-Flip
+   → Kartenmotiv erscheint. Danach tauchen alle Texte gestaffelt auf.
+═══════════════════════════════════════════════════════════════ */
+
+/* Der Bildbereich braucht perspective, damit 3D-Effekte sichtbar sind */
+.result-img-area {
+    cursor: pointer;
+    perspective: 900px;
+}
+
+/* Inneres Drehelement: zwei Seiten (back + front) im 3D-Raum */
+.result-flip-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;  /* Kinder existieren im 3D-Raum */
+    transition: transform 0.8s ease;
+}
+
+/* .flipped = die Klasse, die JS setzt → dreht das Element um 180° */
+.result-flip-inner.flipped {
+    transform: rotateY(180deg);
+}
+
+/* Beide Seiten füllen den gesamten Bereich aus */
+.result-face-back,
+.result-face-front {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden; /* Rückseite unsichtbar wenn gedreht */
+    overflow: hidden;
+    background: var(--purple);
+}
+
+/* Die Vorderseite startet um 180° gedreht → wird erst beim Flip sichtbar */
+.result-face-front {
+    transform: rotateY(180deg);
+    background: var(--white);
+}
+
+.result-face-back img,
+.result-face-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Kleiner Hinweis-Text auf der verdeckten Seite */
+.flip-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.65);
+    font-family: var(--font);
+    pointer-events: none;
+}
+
+/* ─── Texte auf Screen 5 werden versteckt gestartet ───
+   .result-hidden setzt opacity: 0 + leichten Versatz nach unten.
+   JS entfernt die Klasse gestaffelt → Texte tauchen nacheinander auf. */
+.result-hidden {
+    opacity: 0 !important;
+    transform: translateY(12px) !important;
+    pointer-events: none;
+}
+
+/* Übergänge für alle Textelemente auf Screen 5 */
+/* .result-eyebrow neu dazu: erscheint auch gestaffelt nach dem Flip */
+#result-kw-top,
+#result-name,
+#result-desc,
+.result-actions,
+#result-card-name,
+#result-card-kw,
+.result-card-diamond,
+.result-card-footer,
+.result-eyebrow {
+    transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 4 — KARTE IST BEREIT
+   Zwei Elemente nebeneinander: Karte links, Auge rechts.
+═══════════════════════════════════════════════════════════════ */
+.ready-columns {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(2rem, 8vw, 8rem);
+    margin-top: 1rem;
+}
+
+.eye-wrapper {
+    flex: 1;
+    max-width: 300px;
+    padding-top: 1rem;
+}
+
+.eye-svg {
+    width: 100%;
+    height: auto;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SCREEN 5 — ERGEBNIS
+   CSS Grid: linke Spalte (Karte) fest, rechte Spalte (Info) flexibel.
+═══════════════════════════════════════════════════════════════ */
+.result-eyebrow {
+    font-size: clamp(1.6rem, 3.5vw, 3rem);
+    font-weight: 300;
+    margin-bottom: 2rem;
+}
+
+.result-layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: start;
+}
+
+.result-card {
+    width: clamp(160px, 18vw, 230px);
+    background: var(--white);
+    border-radius: var(--card-radius);
+    border: 1.5px solid #ddd;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    position: relative;  /* nötig damit z-index wirkt */
+    z-index: 10;         /* über dem #solo-overlay (z-index: 5) */
+    /* Fly-Animation: JS setzt/entfernt transform, CSS-Transition übernimmt das Bewegen */
+    transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.result-img-area {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #e8e0d4;
+    /* overflow: visible statt hidden – nötig für 3D-Flip (preserve-3d im Kind) */
+    overflow: visible;
+    position: relative; /* nötig damit .result-flip-inner absolute Kinder hat */
+}
+
+/* Direktes Bild (Fallback falls kein Flip gebaut wird) */
+.result-img-area > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.result-card-footer {
+    padding: 0.7rem 0.6rem;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.result-card-name {
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.result-card-diamond {
+    font-size: 0.55rem;
+    color: var(--navy);
+    margin: 0.2rem 0;
+}
+
+.result-card-kw {
+    font-size: 0.65rem;
+    color: var(--purple-dark);
+}
+
+.result-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+/* Kleine Keyword-Zeile: "Fülle · Wachstum" */
+.result-kw-top {
+    font-size: 0.9rem;
+    color: var(--purple-dark);
+    letter-spacing: 0.05em;
+}
+
+/* Grosser Kartenname */
+.result-name {
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.1;
+}
+
+/* Beschreibungstext: max-width in ch = Zeichenbreite, begrenzt Zeilenlänge */
+.result-desc {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: #3a3f5a;
+    max-width: 44ch;
+}
+
+.result-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   MODAL — MEHR LESEN
+   modal-backdrop = dunkler Hintergrund. modal-box = weisses Fenster.
+═══════════════════════════════════════════════════════════════ */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 12, 30, 0.55);
+    cursor: pointer;
+}
+
+.modal-box {
+    position: relative;
+    z-index: 1;
+    background: var(--white);
+    border-radius: var(--box-radius);
+    padding: 2.5rem;
+    max-width: 560px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: var(--navy);
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    line-height: 1;
+}
+.modal-close:hover { opacity: 1; }
+
+.modal-kw {
+    font-size: 0.85rem;
+    color: var(--purple-dark);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.04em;
+}
+
+.modal-title {
+    font-size: 1.9rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.modal-divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 0.5rem 0 1rem;
+}
+
+/* Kleine Abschnitts-Überschriften: "Bedeutung (aufrecht)" */
+.modal-label {
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--purple-dark);
+    margin-top: 1.2rem;
+    margin-bottom: 0.4rem;
+}
+
+.modal-text {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: #3a3f5a;
+}
