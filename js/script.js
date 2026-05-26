@@ -424,11 +424,6 @@ function renderResult(card) {
     backImg.setAttribute('aria-hidden', 'true')
     faceBack.appendChild(backImg)
 
-    const hint = document.createElement('span')
-    hint.classList.add('flip-hint')
-    hint.innerText = 'Klicke zum Aufdecken'
-    faceBack.appendChild(hint)
-
     // Kartenbild-Seite (erst nach dem Flip sichtbar)
     const faceFront = document.createElement('div')
     faceFront.classList.add('result-face-front')
@@ -453,6 +448,14 @@ function renderResult(card) {
     flipInner.appendChild(faceBack)
     flipInner.appendChild(faceFront)
     resultImgArea.appendChild(flipInner)
+
+    // Hinweis-Text im weissen Footer-Bereich der Karte.
+    // Er liegt über dem versteckten Footer-Inhalt (result-hidden) und verschwindet
+    // nach dem Flip automatisch (wird in onCardFlip() entfernt).
+    const footerHint = document.createElement('p')
+    footerHint.classList.add('flip-hint-footer')
+    footerHint.innerText = 'Klicke zum Aufdecken'
+    resultCard.appendChild(footerHint)
 }
 
 
@@ -496,6 +499,10 @@ function startSoloMode() {
     function onCardFlip() {
         resultCard.removeEventListener('click', onCardFlip)
         resultCard.style.cursor = 'default'
+
+        // Hinweis-Text entfernen – er wird nach dem Flip nicht mehr gebraucht
+        const footerHint = resultCard.querySelector('.flip-hint-footer')
+        if (footerHint) footerHint.remove()
 
         // Karte umdrehen (CSS-Transition 0.8s)
         document.querySelector('.result-flip-inner').classList.add('flipped')

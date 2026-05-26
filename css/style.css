@@ -360,18 +360,25 @@ body {
     display: block;
 }
 
-/* Kleiner Hinweis-Text auf der verdeckten Seite */
-.flip-hint {
+/* Hinweis-Text im weissen Footer-Bereich der Karte.
+   position: absolute relativ zu .result-card (position: relative).
+   Liegt über dem versteckten Footer-Inhalt und verschwindet nach dem Flip. */
+.flip-hint-footer {
     position: absolute;
-    bottom: 10px;
+    bottom: 0;
     left: 0;
     right: 0;
+    padding: 0.75rem 0.6rem;
     text-align: center;
-    font-size: 0.62rem;
-    letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.75rem;       /* grösser als vorher (war 0.62rem im dunklen Bereich) */
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--navy);       /* dunkle Schrift auf weissem Hintergrund */
     font-family: var(--font);
+    background: var(--white); /* weisser Hintergrund = Footer-Bereich */
+    border-top: 1px solid #eee;
     pointer-events: none;
+    z-index: 15;              /* über dem versteckten Footer-Inhalt */
 }
 
 /* ─── Texte auf Screen 5 werden versteckt gestartet ───
