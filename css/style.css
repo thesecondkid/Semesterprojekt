@@ -765,3 +765,63 @@ body {
         font-size: 1.5rem;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   ERGÄNZUNGEN FÜR style.css — ans Ende der Datei einfügen
+   ══════════════════════════════════════════════════════════════ */
+
+
+/* ── SCREEN-ÜBERGÄNGE ────────────────────────────────────────
+   .screen--in wird per JS beim Screenwechsel gesetzt.
+   Jeder neue Screen gleitet elegant von unten ein.         */
+@keyframes screenIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.screen--in {
+    animation: screenIn 0.55s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+
+/* ── SCREEN 2: "ATME." PULSIEREN ─────────────────────────────
+   Selbe Farbe wie display-title--muted (#7c6ea8).
+   Pulsiert sanft von fast-unsichtbar bis voll sichtbar.   */
+@keyframes breathePulse {
+    0%, 100% { opacity: 0.25; }
+    50%       { opacity: 1; }
+}
+
+.breathe-label {
+    color: #7c6ea8;
+    animation: breathePulse 2.4s ease-in-out infinite;
+}
+
+
+/* ── SCREEN 4: LOTTIE GRÖSSE ─────────────────────────────────  */
+.eye-lottie {
+    width: 160px;
+    height: 160px;
+    display: block;
+    margin: 1.5rem 0 0 0;
+}
+
+
+/* ── SCREEN 4: TITEL EINBLENDEN ──────────────────────────────
+   Startet unsichtbar, blendet per JS (.ready-text--visible) ein. */
+.ready-text {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.85s ease, transform 0.85s ease;
+}
+
+.ready-text--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
